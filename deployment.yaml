@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-lab-deployment
+  namespace: jupyter-ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyter-lab
+  template:
+    metadata:
+      labels:
+        app: jupyter-lab
+    spec:
+      containers:
+      - name: jupyter-lab
+        image: pragatikoyande/jupyter-ml-lab:latest
+        ports:
+        - containerPort: 8888
+        envFrom:
+        - configMapRef:
+            name: jupyter-config
+        - secretRef:
+            name: jupyter-secret
