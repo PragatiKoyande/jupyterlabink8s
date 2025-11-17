@@ -1,0 +1,56 @@
+name: Build, Push & Deploy JupyterLab to K8s
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Login to Docker Hub
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Build Docker image
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/jupyter-ml-lab:latest .
+
+    # Push Docker image
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jupyter-ml-lab:latest
+
+    # Set up kubectl
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: 'latest'
+
+    # Configure kubeconfig for cluster access
+    - name: Set kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+
+    # Apply K8s manifests
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f namespace.yaml
+        kubectl apply -f configmap.yaml -n jupyter-ml
+        kubectl apply -f secret.yaml -n jupyter-ml
+        kubectl apply -f deployment.yaml -n jupyter-ml
+        kubectl apply -f service.yaml -n jupyter-ml
+
+    # Verify deployment
+    - name: Verify resources
+      run: |
+        kubectl get pods -n jupyter-ml
+        kubectl get svc -n jupyter-ml
