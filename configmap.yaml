@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jupyter-config
+  namespace: jupyter-ml
+data:
+  WELCOME_MSG: "Welcome to JupyterLab on Kubernetes!"
