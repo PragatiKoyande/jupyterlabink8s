@@ -1,0 +1,41 @@
+Install minikube  to serve as a K8S cluster
+https://github.com/amolshete/Minikube-Installation
+
+Create a docker container that would containerize Jupyter/JupyterLab
+Build the container with the following additional content:
+opencv-python kubernetes swat saspy xgboost scikit-learn matplotlib lightgbm
+docker build -t jupyter-ml-lab:latest .
+
+Test the container locally.
+docker run -it --rm -p 8888:8888 jupyter-ml-lab
+
+Push the newly built container to a registry.
+docker tag jupyter-ml-lab:latest <your_dockerhub_username>/jupyter-ml-lab:latest
+docker login
+Push the image
+docker push pragatikoyande/jupyter-ml-lab:latest
+
+Deploy the newly built container to K8S.
+Start Minikube (Kubernetes cluster)
+
+Create dedicated namespace
+Create a service to be exposed on port 8888.
+Create a deployment.
+Create a configmap to be exposed in the pod. Any name is fine.
+Create a secret. Any name is fine.
+Deploy to K8S
+Files are present
+
+kubectl get all -n jupyter-ml
+Show accessing the K8S pod on the correct port.
+
+minikube service -n jupyter-ml jupyter-lab-service --url
+sg add port 3000 - Port forwarding is needed when you want a device outside your local network (e.g., the internet) to access a service running inside your private network.
+kubectl port-forward -n jupyter-ml svc/jupyter-lab-service 3000:8888 --address 0.0.0.0 &
+connects port 3000 on your machine
+to port 8888 of the jupyter-lab-service inside the Kubernetes cluster
+makes it accessible from any IP (0.0.0.0)
+and runs the command in the background (&)
+
+Collect the K8S log to verify the output
+kubectl logs <pod_name> -n jupyter-ml
