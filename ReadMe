@@ -1,7 +1,7 @@
 Install minikube  to serve as a K8S cluster
 https://github.com/amolshete/Minikube-Installation
 
-Create a docker container that would containerize Jupyter/JupyterLab
+Create a docker container that would containerize Jupyter/JupyterLab(JupyterLab is an open-source, web-based interactive development environment (IDE) for working with Jupyter notebooks, code, and data.)
 Build the container with the following additional content:
 opencv-python kubernetes swat saspy xgboost scikit-learn matplotlib lightgbm
 docker build -t jupyter-ml-lab:latest .
